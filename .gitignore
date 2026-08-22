@@ -1,0 +1,16 @@
+# Amplify
+.amplify/
+amplify_outputs*
+amplifyconfiguration*
+node_modules/
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+*.xcworkspace/xcshareddata/swiftpm/Package.resolved.backup
+
+# macOS
+.DS_Store
+__MACOSX/

@@ -21,7 +21,14 @@ jobs:
           node-version: "22"
           cache: npm
 
-      - run: npm ci
+      # `npm install`, not `npm ci`. @aws-amplify/backend depends on
+      # @aws-cdk/toolkit-lib, which ships bundleDependencies; npm cannot
+      # represent those in a lockfile it will then accept, so `npm ci` rejects
+      # the very lockfile `npm install` just produced ("Missing:
+      # @opentelemetry/core@2.0.0 from lock file"). Reproduced locally and
+      # isolated to that package — aws-cdk-lib on its own installs cleanly.
+      # The lockfile stays committed for local reproducibility.
+      - run: npm install --no-audit --no-fund
 
       - name: Typecheck Amplify backend
         run: npx tsc --noEmit

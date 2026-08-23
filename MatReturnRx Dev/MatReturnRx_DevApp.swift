@@ -1,0 +1,32 @@
+//
+//  MatReturnRx_DevApp.swift
+//  MatReturnRx Dev
+//
+//  Created by Juan Sanchez on 6/28/26.
+//
+
+import SwiftUI
+import SwiftData
+
+@main
+struct MatReturnRx_DevApp: App {
+    var sharedModelContainer: ModelContainer = {
+        let schema = Schema([
+            Item.self,
+        ])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        .modelContainer(sharedModelContainer)
+    }
+}

@@ -184,9 +184,14 @@ class AppState: ObservableObject {
 
     init() {
         load()
-        // Verify Pro entitlement against StoreKit on every launch so the
-        // correct state is shown even if UserDefaults was cleared.
         Task { @MainActor in
+            // MRXProgressTracker is @MainActor, so its counters cannot be read
+            // from the nonisolated init. Hop to the main actor first.
+            streak       = MRXProgressTracker.shared.currentStreak()
+            weekSessions = MRXProgressTracker.shared.weekSessionsCount()
+
+            // Verify Pro entitlement against StoreKit on every launch so the
+            // correct state is shown even if UserDefaults was cleared.
             await SubscriptionManager.shared.refreshEntitlements(appState: self)
         }
     }
@@ -200,8 +205,7 @@ class AppState: ObservableObject {
         sport               = d.string(forKey: "mrx_sport")     ?? "Wrestling"
         isPro               = d.bool(forKey: "mrx_pro")
         userId              = TokenManager.shared.userId        ?? ""
-        streak              = MRXProgressTracker.shared.currentStreak()
-        weekSessions        = MRXProgressTracker.shared.weekSessionsCount()
+        // streak / weekSessions are populated on the main actor in init().
         legalAccepted       = d.bool(forKey: "mrx_legal")
         experienceLevel     = d.string(forKey: "mrx_explevel")  ?? "High School"
         trainingPhase       = d.string(forKey: "mrx_phase")     ?? "In-Season"

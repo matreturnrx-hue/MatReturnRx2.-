@@ -71,6 +71,8 @@ jobs:
         if: steps.sources.outputs.present == 'true'
         run: |
           set -o pipefail
+          # Tee the raw output: xcbeautify's summary drops the `error:` lines,
+          # which is exactly what you need when a build fails in CI.
           xcodebuild build \
             -project "MatReturnRx Dev.xcodeproj" \
             -scheme "MatReturnRx Dev" \
@@ -79,7 +81,16 @@ jobs:
             -skipPackagePluginValidation \
             -skipMacroValidation \
             CODE_SIGNING_ALLOWED=NO \
-            | xcbeautify
+            2>&1 | tee /tmp/xcodebuild.log | xcbeautify
+
+      - name: Surface compiler errors
+        if: failure() && steps.sources.outputs.present == 'true'
+        run: |
+          echo "::group::Swift compiler errors"
+          grep -E "error:|warning: .*(never used|unused)" /tmp/xcodebuild.log \
+            | grep -v "amplify-swift\|smithy-swift\|aws-sdk-swift\|SourcePackages" \
+            | sort -u || echo "no 'error:' lines matched"
+          echo "::endgroup::"
 
       - name: Test
         if: steps.sources.outputs.present == 'true'

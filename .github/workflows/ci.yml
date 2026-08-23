@@ -76,6 +76,8 @@ jobs:
             -scheme "MatReturnRx Dev" \
             -destination "platform=iOS Simulator,name=iPhone 16,OS=latest" \
             -configuration Debug \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify
 
@@ -87,6 +89,8 @@ jobs:
             -project "MatReturnRx Dev.xcodeproj" \
             -scheme "MatReturnRx Dev" \
             -destination "platform=iOS Simulator,name=iPhone 16,OS=latest" \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify
         continue-on-error: true
